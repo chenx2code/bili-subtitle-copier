@@ -17,26 +17,22 @@ function addDuration(timeStr, durationSeconds, durationMilliseconds = 0) {
     }
     const parts = timeStr.split(':');
     let totalSeconds = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-    let totalMilliseconds = 0; // 假设起始时间总是 000 毫秒
+    let totalMilliseconds = 0;
 
-    // 加上指定的秒和毫秒
     totalSeconds += durationSeconds;
     totalMilliseconds += durationMilliseconds;
 
-    // 处理毫秒进位到秒
     totalSeconds += Math.floor(totalMilliseconds / 1000);
     totalMilliseconds %= 1000;
 
-    // 计算时、分、秒
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    // 格式化并补零
     const hh = String(hours).padStart(2, '0');
     const mm = String(minutes).padStart(2, '0');
     const ss = String(seconds).padStart(2, '0');
-    const ms = String(totalMilliseconds).padStart(3, '0'); // 毫秒补足3位
+    const ms = String(totalMilliseconds).padStart(3, '0');
 
     return `${hh}:${mm}:${ss},${ms}`;
 }
@@ -75,16 +71,15 @@ function formatToSrt(subtitles) {
         return '';
     }
     let srtContent = '';
-    const defaultDurationSeconds = 2;      // 最后一条字幕的默认秒数
-    const minDurationMilliseconds = 500;   // 无效时间戳时的最小毫秒数 (0.5秒)
+    const defaultDurationSeconds = 2;
+    const minDurationMilliseconds = 500; 
 
     for (let i = 0; i < subtitles.length; i++) {
         const current = subtitles[i];
-        const startTime = formatSrtTime(current.time); // 当前字幕开始时间 (HH:MM:SS,000)
+        const startTime = formatSrtTime(current.time);
         let endTime;
         let nextDifferentTimeIndex = -1;
 
-        // 1. 查找下一个 *不同* 开始时间的字幕索引
         for (let j = i + 1; j < subtitles.length; j++) {
             if (subtitles[j].time !== current.time) {
                 nextDifferentTimeIndex = j;
@@ -92,24 +87,17 @@ function formatToSrt(subtitles) {
             }
         }
 
-        // 2. 根据是否找到下一个不同时间戳来计算结束时间
         if (nextDifferentTimeIndex !== -1) {
-            // 如果找到了，用下一个不同时间戳字幕的开始时间作为当前字幕的结束时间
             endTime = formatSrtTime(subtitles[nextDifferentTimeIndex].time);
         } else {
-            // 如果没找到 (当前是最后一条，或后续所有字幕时间戳相同)
-            // 则在当前字幕开始时间上加默认时长
-            endTime = addDuration(current.time, defaultDurationSeconds, 0); // 默认加 2 秒
+            endTime = addDuration(current.time, defaultDurationSeconds, 0); 
         }
 
-        // 3. **最终检查和修正**：确保 endTime > startTime
         if (endTime <= startTime) {
             console.warn(`[Bili SRT Copier] 时间戳重叠或无效 (${startTime} --> ${endTime})，应用最小持续时间。`);
-            // 如果计算出的结束时间仍然无效，则强制添加一个最小有效时长
-            endTime = addDuration(current.time, 0, minDurationMilliseconds); // 至少保证 500ms 的时长
+            endTime = addDuration(current.time, 0, minDurationMilliseconds); 
         }
 
-        // 添加到 SRT 内容
         srtContent += `${i + 1}\n`;
         srtContent += `${startTime} --> ${endTime}\n`;
         srtContent += `${current.text}\n\n`;
