@@ -1,4 +1,4 @@
-
+// --- 核心功能函数 (格式化时间、提取、格式化SRT) ---
 function formatSrtTime(timeStr) {
     if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) {
         console.warn("[Bili SRT Copier] 无效的时间格式:", timeStr);
@@ -8,7 +8,7 @@ function formatSrtTime(timeStr) {
 }
 
 function addDuration(timeStr, durationSeconds) {
-    if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) {
+     if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) {
         console.warn("[Bili SRT Copier] 用于添加持续时间的时间格式无效:", timeStr);
         return "00:00:00,000";
     }
@@ -28,7 +28,6 @@ function addDuration(timeStr, durationSeconds) {
 }
 
 function extractSubtitlesFromPage() {
-    // 这个函数现在在页面上下文中直接执行，可以直接访问 document
     const subtitleParts = document.querySelectorAll('._Part_1iu0q_16');
     if (!subtitleParts || subtitleParts.length === 0) {
         console.log("[Bili SRT Copier] 未找到字幕元素 (_Part_1iu0q_16)。");
@@ -44,12 +43,12 @@ function extractSubtitlesFromPage() {
             const time = timeEl.textContent.trim();
             const text = textEl.textContent.trim();
             if (/^\d{2}:\d{2}$/.test(time) && text) {
-                subtitles.push({ time, text });
+                 subtitles.push({ time, text });
             } else {
                 console.warn("[Bili SRT Copier] 跳过无效的字幕片段:", { time, text });
             }
         } else {
-            console.warn("[Bili SRT Copier] 跳过缺少时间或文本元素的片段:", part);
+             console.warn("[Bili SRT Copier] 跳过缺少时间或文本元素的片段:", part);
         }
     });
     console.log(`[Bili SRT Copier] 提取到 ${subtitles.length} 条字幕。`);
@@ -61,7 +60,7 @@ function formatToSrt(subtitles) {
         return '';
     }
     let srtContent = '';
-    const defaultDuration = 3; // 默认持续时间
+    const defaultDuration = 3;
 
     for (let i = 0; i < subtitles.length; i++) {
         const current = subtitles[i];
@@ -70,10 +69,9 @@ function formatToSrt(subtitles) {
 
         if (i + 1 < subtitles.length) {
             endTime = formatSrtTime(subtitles[i + 1].time);
-             // 检查结束时间是否不晚于开始时间（B站数据有时会有0秒间隔）
              if (endTime <= startTime) {
                  console.warn(`[Bili SRT Copier] 检测到无效时间戳，调整结束时间: ${startTime} --> ${endTime}`);
-                 endTime = addDuration(current.time, 1); // 至少给1秒间隔
+                 endTime = addDuration(current.time, 1);
              }
         } else {
             endTime = addDuration(current.time, defaultDuration);
@@ -86,145 +84,140 @@ function formatToSrt(subtitles) {
     return srtContent;
 }
 
-// --- 按钮创建和插入逻辑 ---
+// --- 按钮和状态提示的创建与事件处理 ---
+let copyButton = null;
+let statusDiv = null;
 
-let copyButton = null; // 全局变量存储按钮，防止重复创建
-let statusDiv = null;  // 全局变量存储状态提示
+function createOrGetCopyButton() {
+    if (!copyButton || !document.body.contains(copyButton)) {
+        copyButton = document.createElement('button');
+        copyButton.id = 'bili-srt-copy-button';
+        copyButton.textContent = '复制 SRT 字幕';
 
-function createCopyButton() {
-    if (copyButton) return copyButton; // 如果已存在则返回
+        copyButton.addEventListener('click', async () => {
+            if (!statusDiv) return;
 
-    copyButton = document.createElement('button');
-    copyButton.id = 'bili-srt-copy-button';
-    copyButton.textContent = '复制 SRT 字幕';
+            statusDiv.textContent = '正在提取...';
+            copyButton.disabled = true;
 
-    copyButton.addEventListener('click', async () => {
-        if (!statusDiv) return; // 确保状态元素存在
+            try {
+                const subtitles = extractSubtitlesFromPage();
 
-        statusDiv.textContent = '正在提取...';
-        copyButton.disabled = true;
-
-        try {
-            const subtitles = extractSubtitlesFromPage(); // 直接调用提取函数
-
-            if (subtitles === null) {
-                 statusDiv.textContent = '未找到字幕元素。';
-            } else if (subtitles.length === 0) {
-                statusDiv.textContent = '未提取到有效字幕。';
-            } else {
-                const srtData = formatToSrt(subtitles);
-                if (srtData) {
-                    await navigator.clipboard.writeText(srtData);
-                    statusDiv.textContent = `已复制 ${subtitles.length} 条字幕！`;
-                    // 短暂改变按钮文字提示
-                    const originalText = copyButton.textContent;
-                    copyButton.textContent = "已复制!";
-                    setTimeout(() => {
-                        copyButton.textContent = originalText;
-                        statusDiv.textContent = ''; // 清空状态
-                    }, 2000);
+                if (subtitles === null) {
+                    statusDiv.textContent = '未找到字幕元素。';
+                } else if (subtitles.length === 0) {
+                    statusDiv.textContent = '未提取到有效字幕。';
                 } else {
-                    statusDiv.textContent = '格式化 SRT 失败。';
+                    const srtData = formatToSrt(subtitles);
+                    if (srtData) {
+                        await navigator.clipboard.writeText(srtData);
+                        statusDiv.textContent = `已复制 ${subtitles.length} 条字幕！`;
+                        const originalText = copyButton.textContent;
+                        copyButton.textContent = "已复制!";
+                        setTimeout(() => {
+                            if (copyButton) copyButton.textContent = originalText;
+                            if (statusDiv) statusDiv.textContent = '';
+                        }, 2000);
+                    } else {
+                        statusDiv.textContent = '格式化 SRT 失败。';
+                    }
                 }
+            } catch (error) {
+                console.error("[Bili SRT Copier] 复制出错:", error);
+                statusDiv.textContent = `复制出错: ${error.message}`;
+            } finally {
+                if (copyButton) copyButton.disabled = false;
+                 if(statusDiv && (statusDiv.textContent.startsWith('复制出错') || statusDiv.textContent.startsWith('格式化 SRT 失败') || statusDiv.textContent.startsWith('未找到') || statusDiv.textContent.startsWith('未提取'))) {
+                      setTimeout(() => { if (statusDiv) statusDiv.textContent = ''; }, 2000);
+                 }
             }
-        } catch (error) {
-            console.error("[Bili SRT Copier] 复制出错:", error);
-            statusDiv.textContent = `复制出错: ${error.message}`;
-        } finally {
-            copyButton.disabled = false; // 重新启用按钮
-            // 2秒后自动清除错误信息
-            if(statusDiv.textContent.startsWith('复制出错') || statusDiv.textContent.startsWith('格式化 SRT 失败')) {
-                 setTimeout(() => { statusDiv.textContent = ''; }, 2000);
-            }
-        }
-    });
-
+        });
+    }
     return copyButton;
 }
 
-function createStatusDiv() {
-    if (statusDiv) return statusDiv;
-
-    statusDiv = document.createElement('div');
-    statusDiv.id = 'bili-srt-status';
+function createOrGetStatusDiv() {
+    if (!statusDiv || !document.body.contains(statusDiv)) {
+        statusDiv = document.createElement('div');
+        statusDiv.id = 'bili-srt-status';
+    }
     return statusDiv;
 }
 
 
-// --- 插入按钮到目标位置 ---
-// --- 插入按钮到目标位置 ---
-function insertButtonIfPanelExists() {
-    const panelHeader = document.querySelector('._Tabs_krx6h_1._Tabs_196qs_124'); // AI 助手面板的 Tab 栏
-    const contentContainer = document.querySelector('._Content_196qs_128'); // Tab栏下方的整个内容区域
-    const subtitlesListElement = document.querySelector('._SubtitlesList_2jiok_1'); // 字幕列表的容器
+// --- 插入按钮和移除提示逻辑 ---
+function insertButtonAndRemoveTips() {
+    // 查找目标容器
+    const subtitleListContainer = document.querySelector('div[data-video-assistant-subject-subtitles=""]._SubtitlesList_2jiok_1');
 
-    // 确保 Tab 栏和内容区域都存在，并且字幕列表已经加载（避免在“总结”Tab插入）
-    if (panelHeader && contentContainer && subtitlesListElement) {
-        // 检查按钮是否已插入
-        if (!contentContainer.querySelector('#bili-srt-copy-button')) {
-            console.log("[Bili SRT Copier] 检测到 AI 助手面板和字幕列表，准备插入按钮...");
+    if (subtitleListContainer) {
+        // 查找提示元素
+        const tipsElement = subtitleListContainer.querySelector('._Tips_2jiok_5');
+        // 查找字幕内容的父级容器，我们将按钮插入到这个容器的最前面
+        const subtitlesContainer = subtitleListContainer.querySelector('._Subtitles_2jiok_1');
 
-            const button = createCopyButton();
-            const status = createStatusDiv();
+        // 检查按钮是否已存在于容器中
+        const existingButton = subtitleListContainer.querySelector('#bili-srt-copy-button');
 
-            // 将按钮和状态提示插入到 contentContainer 的最前面
-            // insertBefore(newNode, referenceNode)
-            // 如果 referenceNode 是 null，则 newNode 会被插入到末尾
-            // 如果 referenceNode 是第一个子节点，则 newNode 会成为新的第一个子节点
-            const firstChildInContent = contentContainer.firstChild; // 获取内容区域的第一个子元素作为参照物
+        if (subtitlesContainer && !existingButton) { // 确保字幕内容容器存在且按钮未插入
+            console.log("[Bili SRT Copier] 检测到字幕列表容器，准备插入按钮并移除提示...");
+            const button = createOrGetCopyButton();
+            const status = createOrGetStatusDiv();
 
-            contentContainer.insertBefore(status, firstChildInContent); // 将状态提示插入到最前面
-            contentContainer.insertBefore(button, status); // 将按钮插入到状态提示前面（最终按钮在最前）
+            // **修改点：移除提示元素 (如果存在)**
+            if (tipsElement) {
+                tipsElement.remove();
+                console.log("[Bili SRT Copier] 已移除提示元素。");
+            }
 
-            console.log("[Bili SRT Copier] 按钮和状态已插入到内容区域顶部。");
+            // 将按钮和状态提示插入到字幕内容容器 (_Subtitles_2jiok_1) 的最前面
+            subtitlesContainer.insertAdjacentElement('beforebegin', button); // 按钮插入到状态之前 (即最前面)
+            subtitlesContainer.insertAdjacentElement('beforebegin', status); // 状态插入到内容容器之前
+
+            console.log("[Bili SRT Copier] 按钮已插入。");
+        } else if (!subtitlesContainer) {
+            console.log("[Bili SRT Copier] 未找到字幕内容容器 (_Subtitles_2jiok_1)，无法插入按钮。");
         }
+
     } else {
-        // 如果面板关闭或切换Tab导致按钮的预期父节点消失，重置按钮和状态变量
-        // （检查按钮是否还在DOM中，如果不在了才重置，防止切换Tab时误删）
-        if (copyButton && !document.body.contains(copyButton)) {
-            copyButton = null; // 允许下次重新创建
-            statusDiv = null;
-            console.log("[Bili SRT Copier] 按钮的容器节点消失，已重置。");
+        // 如果目标容器不存在，检查按钮是否还挂在DOM上
+        if (copyButton && document.body.contains(copyButton)) {
+             console.log("[Bili SRT Copier] 字幕列表容器未找到，移除旧按钮。");
+             copyButton.remove();
+             statusDiv.remove();
         }
+         copyButton = null;
+         statusDiv = null;
     }
 }
 
-// --- 使用 MutationObserver 监听 DOM 变化 ---
+// --- MutationObserver 监听 DOM 变化 ---
 const observer = new MutationObserver((mutationsList, observer) => {
+    // 优化：仅在检测到 AI 助手面板相关节点变化时才尝试插入/移除
+    let panelChanged = false;
     for (const mutation of mutationsList) {
         if (mutation.type === 'childList') {
-            // 检查是否有节点添加或移除
-            // 简单起见，每次DOM变化都尝试检查并插入按钮
-            insertButtonIfPanelExists();
-
-            // 更精确的检查（可选）：
-            /*
-            mutation.addedNodes.forEach(node => {
-                // 检查添加的节点是否是 AI 助手面板或其父容器
-                if (node.nodeType === 1 && node.matches('div[data-video-assistant-subject-wrapper], div[data-video-assistant-subject-wrapper] *')) {
-                    // 稍微延迟一点等待内部元素加载
-                    setTimeout(insertButtonIfPanelExists, 100);
+             // 检查添加或移除的节点是否与 AI 助手面板相关
+             const checkNodes = (nodes) => {
+                for (const node of nodes) {
+                    if (node.nodeType === 1 && (node.matches('div[data-video-assistant-subject-wrapper], div[data-video-assistant-subject-wrapper] *') || node.querySelector('div[data-video-assistant-subject-wrapper]'))) {
+                        return true;
+                    }
                 }
-            });
-            // 如果面板被移除，也可能需要重置按钮状态
-            mutation.removedNodes.forEach(node => {
-                 if (node.nodeType === 1 && node.matches('div[data-video-assistant-subject-wrapper]')) {
-                     if (copyButton && document.body.contains(copyButton)) {
-                         copyButton.remove();
-                         statusDiv.remove();
-                         copyButton = null;
-                         statusDiv = null;
-                         console.log("[Bili SRT Copier] AI 助手面板移除，按钮已移除。");
-                     }
-                 }
-            });
-            */
+                return false;
+            };
+            if (checkNodes(mutation.addedNodes) || checkNodes(mutation.removedNodes)) {
+                panelChanged = true;
+                break; // 找到相关变化即可
+            }
         }
+    }
+    if (panelChanged) {
+        // 稍微延迟执行，确保 DOM 更新完成
+        setTimeout(insertButtonAndRemoveTips, 100);
     }
 });
 
-// --- 启动监听 ---
-// 监听整个文档的子节点变化和子树变化
 observer.observe(document.body, {
     childList: true,
     subtree: true
@@ -232,7 +225,7 @@ observer.observe(document.body, {
 
 console.log("[Bili SRT Copier] 内容脚本已加载，正在监听 AI 助手面板...");
 
-// 页面加载完成后也尝试插入一次，以防面板已存在
+// 页面加载完成后也尝试插入一次
 window.addEventListener('load', () => {
-    setTimeout(insertButtonIfPanelExists, 500); // 延迟一点确保页面元素加载完毕
+    setTimeout(insertButtonAndRemoveTips, 500);
 });

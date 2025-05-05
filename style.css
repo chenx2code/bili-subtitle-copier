@@ -1,36 +1,38 @@
 #bili-srt-copy-button {
-    display: block; /* 让按钮独占一行 */
-    width: calc(100% - 30px); /* 宽度适应父容器，并留出边距 */
-    margin: 10px 15px 5px; /* 上10，左右15，下5 */
-    padding: 6px 12px; /* 按钮内边距 */
-    background-color: #00a1d6; /* B站蓝 */
-    color: white;
-    border: none;
-    border-radius: 6px; /* 圆角 */
-    cursor: pointer;
-    font-size: 14px; /* 字体大小 */
-    font-weight: 500;
-    text-align: center;
-    transition: background-color 0.2s ease; /* 过渡效果 */
-    box-sizing: border-box; /* 防止 padding 影响总宽度 */
-  }
-  
-  #bili-srt-copy-button:hover {
-    background-color: #00b5e5; /* 悬停颜色加深 */
-  }
-  
-  #bili-srt-copy-button:disabled {
-    background-color: #ccc; /* 禁用状态颜色 */
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-  
-  /* 按钮旁边的状态提示 */
-  #bili-srt-status {
-    color: #666;
-    font-size: 12px;
-    margin: 5px 15px 0; /* 上5，左右15，下0 */
-    min-height: 15px; /* 防止抖动 */
-    text-align: center;
-    transition: opacity 0.3s ease;
-  }
+  display: block;
+  /* 宽度调整为父容器的 90%，并居中 */
+  width: 90%;
+  margin: 8px auto 3px; /* 上8，左右自动居中，下5 */
+  padding: 6px 12px;
+  background-color: #00a1d6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+#bili-srt-copy-button:hover {
+  background-color: #00b5e5;
+}
+
+#bili-srt-copy-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+#bili-srt-status {
+  color: #666;
+  font-size: 12px;
+  margin: 5px 15px 5px; /* 上下5，左右15 */
+  min-height: 15px;
+  text-align: center;
+  transition: opacity 0.3s ease;
+  padding-left: 5px; /* 微调左边距对齐 */
+}
+
