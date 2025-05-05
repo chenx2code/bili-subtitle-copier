@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Bilibili AI字幕 一键复制",
   "version": "1.0",
-  "description": "在 Bilibili 视频页面下方的 AI 小助手“字幕列表”面板中，添加一个便捷的“复制全部字幕”按钮。点击即可将 AI 助手生成的字幕内容，以标准 SRT 格式复制到剪贴板。开发此扩展的初衷是帮助用户轻松获取完整的视频字幕文本，从而更方便地将字幕内容输入给其他 AI 工具，以进行深入的视频内容分析、总结或讨论。",
+  "description": "在 B 站视频页面的 AI 小助手字幕列表面板添加一键“复制全部字幕”按钮，方便获取标准 SRT 格式的字幕文本，以用于 AI 分析或讨论视频内容。",
   "permissions": [
     "clipboardWrite" 
   ],
