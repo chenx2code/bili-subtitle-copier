@@ -1,6 +1,6 @@
 // --- 核心功能函数 (格式化时间、提取、格式化SRT) ---
 
-// 函数：将 MM:SS 格式转换为 HH:MM:SS,ms 
+// 将 MM:SS 格式转换为 HH:MM:SS,ms 
 function formatSrtTime(timeStr) {
     if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) {
         console.warn("[Bili SRT Copier] 无效的时间格式:", timeStr);
@@ -9,7 +9,7 @@ function formatSrtTime(timeStr) {
     return `00:${timeStr},000`;
 }
 
-// **addDuration 函数，增加毫秒处理**
+// 增加毫秒处理
 function addDuration(timeStr, durationSeconds, durationMilliseconds = 0) {
     if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) {
         console.warn("[Bili SRT Copier] 用于添加持续时间的时间格式无效:", timeStr);
@@ -42,7 +42,7 @@ function addDuration(timeStr, durationSeconds, durationMilliseconds = 0) {
 }
 
 
-// 函数：提取字幕
+// 提取字幕
 function extractSubtitlesFromPage() {
     const subtitleParts = document.querySelectorAll('._Part_1iu0q_16');
     if (!subtitleParts || subtitleParts.length === 0) {
@@ -69,7 +69,7 @@ function extractSubtitlesFromPage() {
     return subtitles;
 }
 
-// **修改后的 formatToSrt 函数，改进时间戳处理**
+// 时间戳处理
 function formatToSrt(subtitles) {
     if (!subtitles || subtitles.length === 0) {
         return '';
@@ -119,7 +119,7 @@ function formatToSrt(subtitles) {
 
 
 
-// --- 按钮和状态提示的创建与事件处理 ---
+// 按钮和状态提示的创建与事件处理
 let copyButton = null;
 let statusDiv = null;
 
@@ -177,7 +177,7 @@ function createOrGetStatusDiv() {
 }
 
 
-// --- 插入按钮和移除提示逻辑 ---
+// 插入按钮和移除提示逻辑
 function insertButtonAndRemoveTips() {
     const subtitleListContainer = document.querySelector('div[data-video-assistant-subject-subtitles=""]._SubtitlesList_2jiok_1');
     if (subtitleListContainer) {
@@ -211,7 +211,7 @@ function insertButtonAndRemoveTips() {
     }
 }
 
-// --- MutationObserver 监听 DOM 变化 ---
+// 监听 DOM 变化
 const observer = new MutationObserver((mutationsList, observer) => {
     let panelChanged = false;
     for (const mutation of mutationsList) {
