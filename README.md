@@ -53,7 +53,20 @@
 7.  观察按钮下方的状态提示。成功后会显示 **“已复制 X 条字幕！”**。
 8.  现在，SRT 格式的字幕内容已经在您的剪贴板里了。您可以将其粘贴到任何文本编辑器（如记事本、VS Code）、笔记软件或需要使用字幕的地方。
 
+
+
+![image1](/.assets/image1.png)
+
+
+
+![image2](/.assets/image2.png)
+
+
+
+<img src="/.assets/image3.png" alt="image3" style="zoom: 33%;" />
 ---
+
+
 
 ## 🛠️ 技术细节 (简述)
 
