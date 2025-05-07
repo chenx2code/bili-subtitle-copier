@@ -31,14 +31,42 @@
 
 ## 🚀 安装方法 (开发者模式加载)
 
-由于此扩展目前可能未在 Chrome Web Store 上架，您需要通过开发者模式手动加载：
+由于此扩展目前未在 Chrome Web Store 上架，您需要通过开发者模式手动加载：
 
-1.  **下载:** 下载此仓库的所有文件 (`manifest.json`, `content.js`, `style.css` 以及 `icons` 文件夹等)，并将它们放在同一个文件夹内。或者使用 `git clone` 克隆整个仓库。
-2.  **打开扩展管理:** 打开 Chrome 浏览器，在地址栏输入 `chrome://extensions` 并按回车键。
-3.  **启用开发者模式:** 在扩展管理页面的右上角，找到并打开 **“开发者模式”** 的开关。
-4.  **加载扩展:** 点击页面左上角出现的 **“加载已解压的扩展程序”** 按钮。
-5.  **选择文件夹:** 在弹出的文件选择窗口中，找到并选择包含 `manifest.json` 文件的那个 **文件夹** (也就是你存放项目文件的根目录)。
-6.  **完成:** "Bilibili AI字幕 一键复制" 扩展现在应该出现在您的扩展列表中，并已默认启用。
+**推荐：从 GitHub Release 安装 (适用于所有用户)**
+
+1.  **下载最新版本：**
+    *   访问本项目的 [**Releases 页面**](https://github.com/chenx2code/bili-subtitle-copier/releases)。
+    *   在最新版本的 "Assets" 部分，下载名为 `bili-subtitle-copier-版本号-chrome.zip` 的文件（例如 `bili-subtitle-copier-0.0.1-chrome.zip`）。
+
+2.  **解压缩 ZIP 文件：**
+    *   找到你下载的 `.zip` 文件，并将其解压缩到一个你方便找到的文件夹中。解压后你会得到一个包含扩展所有文件的文件夹 (例如 `bili-subtitle-copier-0.0.1-chrome`)。
+
+3.  **在 Chrome 中加载扩展：**
+    *   打开 Chrome 浏览器。
+    *   在地址栏输入 `chrome://extensions` 并按回车键，进入扩展管理页面。
+    *   **开启“开发者模式”：** 确保页面右上角的“开发者模式 (Developer mode)”开关已打开。
+    *   **加载扩展：** 点击页面左上角出现的“加载已解压的扩展程序 (Load unpacked)”按钮。
+    *   **选择文件夹：** 在弹出的文件选择窗口中，找到并选择你在第 2 步中**解压缩后得到的那个文件夹** (例如 `bili-subtitle-copier-0.0.1-chrome`)。
+    *   点击“选择文件夹 (Select Folder)”。
+
+4.  **完成：**
+    *   "Bilibili AI字幕 一键复制" 扩展现在应该会出现在你的扩展列表中，并已默认启用。你可以在 Chrome 工具栏上看到它的图标。
+
+**备选：从源代码加载 (适用于开发者)**
+
+如果你希望从最新的源代码进行构建和安装，或者想参与开发和调试，可以按照以下步骤操作：
+
+1.  **克隆仓库：**
+    ```bash
+    https://github.com/chenx2code/bili-subtitle-copier.git
+    ```
+2.  **在 Chrome 中加载扩展：**
+    *   打开 Chrome 浏览器，地址栏输入 `chrome://extensions`。
+    *   开启“开发者模式”。
+    *   点击“加载已解压的扩展程序”。
+    *   选择你克隆下来的项目文件夹（确保它包含了 `manifest.json` 以及所有必需的源代码文件，也就是你存放项目文件的根目录）。
+3.  **完成。**
 
 ---
 
